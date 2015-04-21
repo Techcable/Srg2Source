@@ -122,6 +122,10 @@ public class SymbolRangeEmitter
     public void emitFieldRange(VariableDeclarationFragment field, String parent)
     {
         IVariableBinding var = field.resolveBinding();
+        if (var == null) {
+            System.out.println("Unable to resolve " + field.getName());
+            return;
+        }
         String name = var.getName();
         String cls = var.getDeclaringClass().getQualifiedName();
         String init = "";

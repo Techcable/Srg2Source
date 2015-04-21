@@ -264,6 +264,10 @@ public class SymbolReferenceWalker extends ASTVisitor
         return false;
     }
     public boolean visit(MethodDeclaration node) {
+        if (node.resolveBinding() == null) {
+            System.out.println("Unable to resolve" + node.getName());
+            return false;
+        }
         String signature = emitter.getMethodSignature(node, false);
         String name = node.getName().toString();
 
