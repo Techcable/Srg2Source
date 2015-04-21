@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
@@ -10,14 +11,20 @@ buildscript {
             url = "https://repo.eclipse.org/content/groups/eclipse/"
         }
     }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    }
 }
+
+apply plugin: 'eu.appsatori.fatjar'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
 
 group = 'net.minecraftforge.srg2source'
-version = '3.2-SNAPSHOT'
+version = '3.2'
 archivesBaseName = 'Srg2Source'
 targetCompatibility = '1.6'
 sourceCompatibility = '1.6'
@@ -61,15 +68,24 @@ repositories {
     mavenCentral()
 }
 
+fatJarPrepareFiles {
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+}
+
 jar {
     manifest {
-        attributes 'version':project.version, 'javaCompliance': project.targetCompatibility
-        attributes 'group':project.group
+        attributes 'version':project.version
     }
 }
 
 jar {
     exclude 'data/**'
+}
+
+fatJar {
+
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
