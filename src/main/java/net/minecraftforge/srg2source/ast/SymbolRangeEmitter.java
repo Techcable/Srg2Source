@@ -3,6 +3,7 @@ package net.minecraftforge.srg2source.ast;
 import java.io.PrintWriter;
 import java.util.List;
 
+import net.minecraftforge.srg2source.util.Util;
 import org.eclipse.jdt.core.dom.*;
 
 @SuppressWarnings("unchecked")
@@ -272,8 +273,9 @@ public class SymbolRangeEmitter
 
     public void emitReferencedClass(Name name, ITypeBinding clazz)
     {
+        String qualifiedName = Util.resolveNameRespectingInner(clazz.getErasure());
         //String|class|java.lang.String
-        log(commonFields(name.toString(), name) + "class" + FS + clazz.getErasure().getQualifiedName());
+        log(commonFields(name.toString(), name) + "class" + FS + qualifiedName);
     }
 
 
@@ -422,8 +424,6 @@ public class SymbolRangeEmitter
 
     public String commonFields(String oldText, ASTNode textRange)
     {
-        // Include source filename for opening, textual range start/end, and old
-        // text for sanity check
         return "@" + FS + sourceFilePath
                    + FS + textRange.getStartPosition()
                    + FS + (textRange.getStartPosition() + textRange.getLength())

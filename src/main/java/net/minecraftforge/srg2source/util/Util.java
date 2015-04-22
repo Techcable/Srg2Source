@@ -23,6 +23,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 
 public class Util
 {
@@ -348,5 +349,15 @@ public class Util
 
         parser.setSource(data.toCharArray());
         return (CompilationUnit) parser.createAST(null);
+    }
+
+    public static String resolveNameRespectingInner(ITypeBinding binding) {
+        String localPart = "";
+        while (binding.isLocal()) {
+            localPart = localPart + (localPart.isEmpty() ? "" : "$") + binding.getName();
+            binding = binding.getDeclaringClass();
+        }
+        String name = binding.getQualifiedName() + "$" + localPart;
+        return name;
     }
 }

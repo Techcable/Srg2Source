@@ -145,10 +145,15 @@ public class RangeExtractor extends ConfLogger<RangeExtractor>
                     {
                         AbstractTypeDeclaration type = types.get(0);
 
-                        String qualified = ((ITypeBinding)type.getName().resolveBinding()).getQualifiedName();
-                        SymbolReferenceWalker walker = new SymbolReferenceWalker(emitter, qualified, newCode);
+                        ITypeBinding binding = type.resolveBinding();
+                        if (binding == null) {
+                            System.err.println("Unable to resolve: " + type.getName());
+                        } else {
+                            String qualified = binding.getQualifiedName();
+                            SymbolReferenceWalker walker = new SymbolReferenceWalker(emitter, qualified, newCode);
 
-                        walker.walk(type);
+                            walker.walk(type);
+                        }
                     }
                     else
                     {

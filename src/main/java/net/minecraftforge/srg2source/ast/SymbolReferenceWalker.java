@@ -3,6 +3,7 @@ package net.minecraftforge.srg2source.ast;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraftforge.srg2source.util.Util;
 import org.eclipse.jdt.core.dom.*;
 
 /**
@@ -393,7 +394,9 @@ public class SymbolReferenceWalker extends ASTVisitor
         return false;
     }
     public boolean visit(TypeDeclaration node) {
-        String name = ((ITypeBinding)node.getName().resolveBinding()).getQualifiedName();
+        ITypeBinding binding = node.resolveBinding();
+
+        String name = Util.resolveNameRespectingInner(binding);
 
         emitter.log("Class Start: " + name);
         emitter.tab();
