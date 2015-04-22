@@ -263,8 +263,10 @@ public class RangeApplier extends ConfLogger<RangeApplier>
 
         // Existing package/class name (with package, internal) derived from filename
         String oldTopLevelClassFullName = Util.getTopLevelClassForFilename(fileName);
-        String oldTopLevelClassPackage = Util.splitPackageName(oldTopLevelClassFullName);
-        String oldTopLevelClassName = Util.splitBaseName(oldTopLevelClassFullName);
+        String oldTopLevelClassPackage = Util.internalName2Source(Util.splitPackageName(oldTopLevelClassFullName));
+        String oldTopLevelClassName = Util.sourceName2Internal(Util.splitBaseName(oldTopLevelClassFullName));
+
+        boolean inner = oldTopLevelClassFullName.contains("$");
 
         // New package/class name through mapping
         String newTopLevelClassFullName = Util.sourceName2Internal(map.maps.get("class " + oldTopLevelClassFullName), false);
@@ -338,8 +340,12 @@ public class RangeApplier extends ConfLogger<RangeApplier>
         // rename?
         if (newTopLevelClassPackage != null) // rename if package changed
         {
-            String newFileName = (newTopLevelClassPackage + "/" + newTopLevelClassName + ".java").replace('\\', '/');
-
+            String newFileName;
+            if (inner) {
+                newFileName = (newTopLevelClassName + "/" + newTopLevelClassName + "-inner-" + oldTopLevelClassName + ".java").replace('\\', '/');
+            } else {
+                newFileName = (newTopLevelClassPackage + "/" + newTopLevelClassName + ".java").replace('\\', '/');
+            }
             log("Rename file " + fileName + " -> " + newFileName);
 
             fileName = newFileName;
