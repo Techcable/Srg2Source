@@ -357,7 +357,7 @@ public class Util
             localPart = localPart + (localPart.isEmpty() ? "" : "$") + binding.getName();
             binding = binding.getDeclaringClass();
         }
-        String name = binding.getQualifiedName() + "$" + localPart;
+        String name = binding.getQualifiedName() + (localPart.isEmpty() ? "" : "$") + localPart;
         return name;
     }
 }

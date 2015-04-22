@@ -267,10 +267,11 @@ public class RangeApplier extends ConfLogger<RangeApplier>
         String oldTopLevelClassName = Util.splitBaseName(oldTopLevelClassFullName);
 
         // New package/class name through mapping
-        String newTopLevelClassPackage = Util.sourceName2Internal(map.maps.get("package " + oldTopLevelClassPackage));
-        String newTopLevelClassName = Util.splitBaseName(Util.sourceName2Internal(map.maps.get("class " + oldTopLevelClassFullName), false));
+        String newTopLevelClassFullName = Util.sourceName2Internal(map.maps.get("class " + oldTopLevelClassFullName), false);
+        String newTopLevelClassPackage = Util.splitPackageName(newTopLevelClassFullName);
+        String newTopLevelClassName = Util.splitBaseName(newTopLevelClassFullName);
         if (newTopLevelClassPackage != null && newTopLevelClassName == null)
-            throw new RuntimeException("filename " + fileName + " found package " + oldTopLevelClassPackage + "->" + newTopLevelClassPackage + " but no class map for " + newTopLevelClassName);
+            throw new RuntimeException("filename " + fileName + " found package " + oldTopLevelClassPackage + "->" + newTopLevelClassPackage + " but no class map for " + (newTopLevelClassName == null ? "unknown" : newTopLevelClassName));
         if (newTopLevelClassPackage == null && newTopLevelClassName != null)
             throw new RuntimeException("filename " + fileName + " found class map " + oldTopLevelClassName + "->" + newTopLevelClassName + " but no package map for " + oldTopLevelClassPackage);
 
