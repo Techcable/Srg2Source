@@ -49,9 +49,12 @@ public class RangeApplier extends ConfLogger<RangeApplier>
             //parser.accepts("no-dumpRenameMap", "Disable dumping symbol rename map before renaming"); // var="dumpRenameMap", default=True
             parser.accepts("dumpRangeMap", "Enable dumping the ordered range map and quit"); // var=dumpRangeMap, default=False
             parser.accepts("outDir", "The output folder for editted classes.").withRequiredArg().ofType(File.class); // default null
+            parser.accepts("dontRename", "Dont rename the files");
         }
 
         OptionSet options = parser.parse(args);
+
+        boolean doRename = parser.accepts("dontRename");
 
         if (options.has("help"))
         {
@@ -198,7 +201,7 @@ public class RangeApplier extends ConfLogger<RangeApplier>
      * @param annotate Marks all renamed symbols with a comment and the old name.
      * @throws IOException
      */
-    public void remapSources(InputSupplier inSupp, OutputSupplier outSupp, File rangeMap, boolean annotate) throws IOException
+    public void remapSources(InputSupplier inSupp, OutputSupplier outSupp, File rangeMap, boolean annotate, boolean doRename) throws IOException
     {
         RangeMap range = new RangeMap().read(rangeMap);
 
@@ -229,7 +232,7 @@ public class RangeApplier extends ConfLogger<RangeApplier>
             }
 
             // process
-            List<String> out = processJavaSourceFile(filePath, data, range.get(filePath), annotate);
+            List<String> out = processJavaSourceFile(filePath, data, range.get(filePath), annotate, doRename);
             filePath = out.get(0);
             data = out.get(1);
 
@@ -253,7 +256,7 @@ public class RangeApplier extends ConfLogger<RangeApplier>
      * @return
      * @throws IOException
      */
-    private ImmutableList<String> processJavaSourceFile(String fileName, String data, Collection<RangeEntry> rangeList, boolean shouldAnnotate) throws IOException
+    private ImmutableList<String> processJavaSourceFile(String fileName, String data, Collection<RangeEntry> rangeList, boolean shouldAnnotate, boolean doRename) throws IOException
     {
         StringBuilder outData = new StringBuilder();
         outData.append(data);
@@ -338,7 +341,7 @@ public class RangeApplier extends ConfLogger<RangeApplier>
         String outString = updateImports(outData, importsToAdd, map.imports);
 
         // rename?
-        if (newTopLevelClassPackage != null) // rename if package changed
+        if (newTopLevelClassPackage != null && doRename) // rename if package changed
         {
             String newFileName;
             if (inner) {
